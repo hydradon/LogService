@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -17,6 +19,7 @@ public class FileReaderService {
 
         try {
             return BaseLogResponse.builder()
+                    .asOf(new Timestamp(System.currentTimeMillis()))
                     .searchText(searchText)
                     .logLines(logFileReader.readLogFile(fileName, numLines, searchText))
                     .build();
@@ -24,6 +27,7 @@ public class FileReaderService {
         } catch (Exception e) {
             log.warn("Error reading log lines: " + e.getMessage());
             return BaseLogResponse.builder()
+                    .asOf(new Timestamp(System.currentTimeMillis()))
                     .searchText(searchText)
                     .errorMessage(e.getMessage())
                     .build();
@@ -34,6 +38,7 @@ public class FileReaderService {
 
         try {
             return BaseLogResponse.builder()
+                    .asOf(new Timestamp(System.currentTimeMillis()))
                     .searchText(searchText)
                     .logLines(logFileReader.readLogFile2(fileName, numLines, searchText))
                     .build();
@@ -41,6 +46,7 @@ public class FileReaderService {
         } catch (Exception e) {
             log.warn("Error reading log lines: " + e.getMessage());
             return BaseLogResponse.builder()
+                    .asOf(new Timestamp(System.currentTimeMillis()))
                     .searchText(searchText)
                     .errorMessage(e.getMessage())
                     .build();
