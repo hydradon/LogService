@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 
+/**
+ * This is the service layer of the microservice. It invokes the utility class to read the log file.
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -15,6 +18,9 @@ public class FileReaderService {
 
     private final LogFileReader logFileReader;
 
+    /**
+     * Invokes the utility class with the approach that uses the Apache Common IO ReversedLinesFileReader.
+     */
     public BaseLogResponse readLogLines(String fileName, int numLines, String searchText) {
 
         try {
@@ -34,6 +40,9 @@ public class FileReaderService {
         }
     }
 
+    /**
+     * Invokes the utility class with the approach that uses custom implementation.
+     */
     public BaseLogResponse readLogLines2(String fileName, int numLines, String searchText) {
 
         try {

@@ -14,6 +14,10 @@ import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ * This class is a Utility class that handles logic to read file and search for matching texts
+ * The base directory of the file is retrieved from environment properties "log-location.default"
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -21,6 +25,17 @@ public class LogFileReader {
 
     private final Environment env;
 
+    /**
+     * This method reads log file using Apache Common IO's ReversedLinesFileReader that reads
+     * a file line by line from the end.
+     *
+     * @param fileName the file name to be read from, the based location is stored in "log-location.default"
+     * @param numLines specifies how many lines to we want to retrieve from the end of file.
+     *                 if numLines > actual number of log lines in file, we return as many as we can find.
+     * @param searchText specifies a text that a log line contains
+     * @return a list of matching log lines
+     * @throws Exception when there is error processing log file
+     */
     public List<String> readLogFile(String fileName, int numLines, String searchText) throws Exception {
         try (ReversedLinesFileReader reader = new ReversedLinesFileReader(
                 new File(env.getProperty("log-location.default") + fileName), UTF_8)) {
@@ -43,8 +58,20 @@ public class LogFileReader {
         return lines;
     }
 
-    public List<String> readLogFile2(String filePath, int n, String searchText) throws Exception {
-        String absoluteFilePath = env.getProperty("log-location.default") + filePath;
+    /**
+     * This method reads log file using custom implementation using RandomAccessFile. It seeks to the end of the file
+     * and reads backwards from there. If it encounters the end of line, it reverses the current result (since we
+     * read backwards), performs text search, and if text is found, it appends to current result.
+     *
+     * @param fileName the file name to be read from, the based location is stored in "log-location.default"
+     * @param numLines specifies how many lines to we want to retrieve from the end of file.
+     *                 if numLines > actual number of log lines in file, we return as many as we can find.
+     * @param searchText specifies a text that a log line contains
+     * @return a list of matching log lines
+     * @throws Exception when there is error processing log file
+     */
+    public List<String> readLogFile2(String fileName, int numLines, String searchText) throws Exception {
+        String absoluteFilePath = env.getProperty("log-location.default") + fileName;
         File file = new File(absoluteFilePath);
         StringBuilder builder = new StringBuilder();
         String line;
@@ -60,8 +87,8 @@ public class LogFileReader {
                     line = builder.reverse().toString();
                     if (searchText == null || line.contains(searchText)) {
                         ans.add(line);
-                        n--;
-                        if (n == 0) {
+                        numLines--;
+                        if (numLines == 0) {
                             break;
                         }
                     }

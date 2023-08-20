@@ -26,7 +26,8 @@ class LogFileReaderTest {
 
     @BeforeEach
     public void setup() {
-        when(environment.getProperty("log-location.default")).thenReturn("D:/Projects/LogService/logfiles/");
+        when(environment.getProperty("log-location.default"))
+                .thenReturn("src/test/resources/logfiles/");
     }
 
     @Test
