@@ -2,8 +2,9 @@
 
 This is a Java microservice built with Spring framework. It reads a log file located in a location and returns the last `numLines` matching lines that contain a specific `searchText`. The default location of the log files can be specified in Spring properties `log-location.default` in [application.properties](src/main/resources/application.properties).
 
-
-Sample HDFS log files in ([logfiles](logfiles)) are retrieved from this public repo: https://zenodo.org/record/8196385
+## Sample log files
+- A small sample HDFS log file (2k lines) is included for testing ([HDFS_2k.log](logfiles/HDFS_2k.log))
+- Other larger sample HDFS log files in ([logfiles](logfiles)) are retrieved from this public repo: https://zenodo.org/record/8196385. Once downloaded and unzipped, place the files in that folder where the service will read from.
 
 ## Prerequisite
 + JDK 17: https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html

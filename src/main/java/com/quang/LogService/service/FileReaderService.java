@@ -22,7 +22,7 @@ public class FileReaderService {
      * Invokes the utility class with the approach that uses the Apache Common IO ReversedLinesFileReader.
      */
     public BaseLogResponse readLogLines(String fileName, int numLines, String searchText) {
-
+        log.info("Retrieving {} lines from {}", numLines, fileName);
         try {
             return BaseLogResponse.builder()
                     .asOf(new Timestamp(System.currentTimeMillis()))
@@ -44,7 +44,7 @@ public class FileReaderService {
      * Invokes the utility class with the approach that uses custom implementation.
      */
     public BaseLogResponse readLogLines2(String fileName, int numLines, String searchText) {
-
+        log.info("Retrieving {} lines from {}", numLines, fileName);
         try {
             return BaseLogResponse.builder()
                     .asOf(new Timestamp(System.currentTimeMillis()))
