@@ -25,6 +25,8 @@ public class LogFileReader {
 
     private final Environment env;
 
+    private static final String LOG_BASE_DIR_PROP_NAME = "log-location.default";
+
     /**
      * This method reads log file using Apache Common IO's ReversedLinesFileReader that reads
      * a file line by line from the end.
@@ -38,7 +40,7 @@ public class LogFileReader {
      */
     public List<String> readLogFile(String fileName, int numLines, String searchText) throws Exception {
         try (ReversedLinesFileReader reader = new ReversedLinesFileReader(
-                new File(env.getProperty("log-location.default") + fileName), UTF_8)) {
+                new File(env.getProperty(LOG_BASE_DIR_PROP_NAME) + fileName), UTF_8)) {
             return readNLines(reader, numLines, searchText);
         } catch (Exception e) {
             log.error("Error processing file: ", e);
@@ -46,6 +48,14 @@ public class LogFileReader {
         }
     }
 
+    /**
+     * Supporting method that takes in a ReversedLinesFileReader class to read line by line.
+     * @param reader
+     * @param n
+     * @param searchText
+     * @return
+     * @throws IOException
+     */
     private List<String> readNLines(ReversedLinesFileReader reader, int n, String searchText) throws IOException {
         List<String> lines = new ArrayList<>();
         String line;
@@ -71,7 +81,7 @@ public class LogFileReader {
      * @throws Exception when there is error processing log file
      */
     public List<String> readLogFile2(String fileName, int numLines, String searchText) throws Exception {
-        String absoluteFilePath = env.getProperty("log-location.default") + fileName;
+        String absoluteFilePath = env.getProperty(LOG_BASE_DIR_PROP_NAME) + fileName;
         File file = new File(absoluteFilePath);
         StringBuilder builder = new StringBuilder();
         String line;
