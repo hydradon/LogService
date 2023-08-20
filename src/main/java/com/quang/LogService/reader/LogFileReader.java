@@ -2,41 +2,79 @@ package com.quang.LogService.reader;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.input.ReversedLinesFileReader;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class LogFileReader {
-    private static int BUFFER_SIZE = 16384; // 16 KB
-    private static String DEFAULT_LOCATION = "src/main/resources/logfiles/";
 
-    public List<String> readLogFile(String fileName, int numLines) {
-//        try (BufferedReader br = new BufferedReader(new FileReader(fileName), BUFFER_SIZE)) {
-        try (BufferedReader br = Files.newBufferedReader(Paths.get(DEFAULT_LOCATION + fileName))) {
-            return readNLines(br, numLines);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    private final Environment env;
+
+    public List<String> readLogFile(String fileName, int numLines, String searchText) throws Exception {
+        try (ReversedLinesFileReader reader = new ReversedLinesFileReader(
+                new File(env.getProperty("log-location.default") + fileName), UTF_8)) {
+            return readNLines(reader, numLines, searchText);
+        } catch (Exception e) {
+            log.error("Error processing file: ", e);
+            throw e;
         }
     }
 
-    private List<String> readNLines(BufferedReader bf, int n) throws IOException {
+    private List<String> readNLines(ReversedLinesFileReader reader, int n, String searchText) throws IOException {
         List<String> lines = new ArrayList<>();
         String line;
-        while ((line = bf.readLine()) != null && n > 0) {
-            lines.add(line);
-            n--;
+        while ((line = reader.readLine()) != null && n > 0) {
+            if (searchText == null || line.contains(searchText)) {
+                lines.add(line);
+                n--;
+            }
+        }
+        return lines;
+    }
+
+    public List<String> readLogFile2(String filePath, int n, String searchText) throws Exception {
+        String absoluteFilePath = env.getProperty("log-location.default") + filePath;
+        File file = new File(absoluteFilePath);
+        StringBuilder builder = new StringBuilder();
+        String line;
+        List<String> ans = new ArrayList<>();
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(absoluteFilePath, "r")) {
+            long pos = file.length() - 1;
+            randomAccessFile.seek(pos);
+
+            for (long i = pos - 1; i >= 0; i--) {
+                randomAccessFile.seek(i);
+                char c = (char) randomAccessFile.read();
+                if (c == '\n') { // finished reading a line
+                    line = builder.reverse().toString();
+                    if (searchText == null || line.contains(searchText)) {
+                        ans.add(line);
+                        n--;
+                        if (n == 0) {
+                            break;
+                        }
+                    }
+                    builder.setLength(0); // reset and re-use String builder
+                } else {
+                    builder.append(c);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error processing file: ", e);
+            throw e;
         }
 
-        return lines;
+        return ans;
     }
 }
