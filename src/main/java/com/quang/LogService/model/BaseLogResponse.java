@@ -1,8 +1,19 @@
 package com.quang.LogService.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
+import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Builder
-public record BaseLogResponse(long id, List<String> logLines) {}
+@Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class BaseLogResponse implements Serializable {
+
+    String searchText;
+    List<String> logLines;
+    String errorMessage;
+
+}
