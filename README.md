@@ -50,6 +50,13 @@ Searching for the latest 10 log lines that has the string `PacketResponder`:
     ]
 }
 ```
+## Monitoring
+When this service is deployed to Production, we'd want to monitor its health and other telemetry information. Here, I use [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/actuator-api/htmlsingle/) to expose a few endpoints for the service:
++ http://localhost:8080/actuator/health
++ http://localhost:8080/actuator/env
++ http://localhost:8080/actuator/info
++ http://localhost:8080/actuator/beans
+
 
 ## Future development
 
