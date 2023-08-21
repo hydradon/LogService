@@ -23,7 +23,15 @@ public class LogController {
     public BaseLogResponse getLogLines(@RequestParam String fileName,
                                        @RequestParam(defaultValue = "5") Integer numLines,
                                        @RequestParam(defaultValue = "") String searchText) {
-        return fileReaderService.readLogLines(fileName, numLines, searchText);
+        var response = fileReaderService.readLogLines(fileName, numLines, searchText);
+        // Get the Java runtime
+        Runtime runtime = Runtime.getRuntime();
+        // Run the garbage collector
+        runtime.gc();
+        // Calculate the used memory
+        long memory = runtime.totalMemory() - runtime.freeMemory();
+        log.info("Used memory is {} B, {} MB", memory,  memory /(1024L * 1024L));
+        return response;
     }
 
     @GetMapping(
@@ -33,7 +41,15 @@ public class LogController {
     public BaseLogResponse getLogLines2(@RequestParam String fileName,
                                         @RequestParam(defaultValue = "5") Integer numLines,
                                         @RequestParam(defaultValue = "") String searchText) {
-        return fileReaderService.readLogLines2(fileName, numLines, searchText);
+        var response = fileReaderService.readLogLines2(fileName, numLines, searchText);
+//        // Get the Java runtime
+//        Runtime runtime = Runtime.getRuntime();
+//        // Run the garbage collector
+//        runtime.gc();
+//        // Calculate the used memory
+//        long memory = runtime.totalMemory() - runtime.freeMemory();
+//        log.info("Used memory is {} B, {} MB", memory,  memory /(1024L * 1024L));
+        return response;
     }
 
 }

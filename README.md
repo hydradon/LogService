@@ -51,6 +51,18 @@ Searching for the latest 10 log lines that has the string `PacketResponder`:
     ]
 }
 ```
+
+## Flow diagram
+![img_1.png](img_1.png)
+
+## Testing
+Unit test suite is included in the [src/test/java](src/test/java) directory.
+
+### Memory usage
+Simple approach to log memory usage is added in [LogController.java](src/main/java/controller/LogController.java) file. A call to a 1.5 GB log file to retrieve 5 lines with a searchText would consume about 14 MB of memory:
+
+![img.png](img.png)
+
 ## Monitoring
 When this service is deployed to Production, we'd want to monitor its health and other telemetry information. Here, I use [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/actuator-api/htmlsingle/) to expose a few endpoints for the service:
 + http://localhost:8080/actuator/health
