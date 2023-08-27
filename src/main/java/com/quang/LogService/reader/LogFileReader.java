@@ -60,7 +60,9 @@ public class LogFileReader {
         List<String> lines = new ArrayList<>();
         String line;
         while ((line = reader.readLine()) != null && n > 0) {
-            if (searchText == null || line.contains(searchText)) {
+            log.debug("Finished reading a line: {}.", line);
+            if (isLineEligible(line, searchText)) {
+                log.debug("Log line matches search condition.");
                 lines.add(line);
                 n--;
             }
@@ -88,14 +90,17 @@ public class LogFileReader {
         List<String> ans = new ArrayList<>();
         try (RandomAccessFile randomAccessFile = new RandomAccessFile(absoluteFilePath, "r")) {
             long pos = file.length() - 1;
+            log.debug("Starting reading file from position {}", pos);
             randomAccessFile.seek(pos);
 
             for (long i = pos - 1; i >= 0; i--) {
                 randomAccessFile.seek(i);
                 char c = (char) randomAccessFile.read();
                 if (c == '\n') { // finished reading a line
-                    line = builder.reverse().toString();
-                    if (searchText == null || line.contains(searchText)) {
+                    line = builder.reverse().toString(); // Reversing the string because we read from the bacl
+                    log.debug("Finished reading a line: {}.", line);
+                    if (isLineEligible(line, searchText)) {
+                        log.debug("Log line matches search condition.");
                         ans.add(line);
                         numLines--;
                         if (numLines == 0) {
@@ -113,5 +118,11 @@ public class LogFileReader {
         }
 
         return ans;
+    }
+
+    // if no searchText, that means we don't do any text matching search, so just return the line
+    // if there is searchText provided, we return the line only if it contains the text
+    private boolean isLineEligible(String line, String searchText) {
+        return searchText == null || line.contains(searchText);
     }
 }
